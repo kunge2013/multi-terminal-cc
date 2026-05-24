@@ -18,12 +18,12 @@
 - [x] CHANGELOG.md
 - [x] TODOS.md
 - [x] GitHub Actions CI workflow
-- [ ] README.md (user guide)
+- [x] README.md (user guide)
 
 ### Testing
-- [ ] Unit tests for session.ts (~8 tests)
-- [ ] Unit tests for store.ts (~4 tests)
-- [ ] Unit tests for types.ts (~3 tests)
+- [x] Unit tests for session.ts (~8 tests)
+- [x] Unit tests for store.ts (~4 tests)
+- [x] Unit tests for types.ts (~3 tests)
 
 ### CI/CD
 - [x] GitHub Actions workflow for build/release
