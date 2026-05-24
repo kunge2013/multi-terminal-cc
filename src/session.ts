@@ -3,6 +3,7 @@
 import { promises as fs } from 'fs';
 import { SessionMeta, Session, SUPPORTED_VERSION, SESSIONS_DIR } from './types.js';
 import { readLabels } from './store.js';
+import { detectTmuxSession } from './tmux.js';
 
 export async function readSessions(): Promise<Session[]> {
   const sessions: Session[] = [];
@@ -50,6 +51,16 @@ export async function readSessions(): Promise<Session[]> {
       console.error('Failed to read sessions dir:', e);
     }
   }
+
+  // Enrich sessions with tmux info
+  await Promise.all(sessions.map(async (session) => {
+    if (session.status !== 'completed') {
+      const detected = await detectTmuxSession(session.pid);
+      if (detected) {
+        session.tmuxSessionName = detected.sessionName;
+      }
+    }
+  }));
 
   // Sort by last activity (most recent first)
   sessions.sort((a, b) => b.lastActivity.getTime() - a.lastActivity.getTime());

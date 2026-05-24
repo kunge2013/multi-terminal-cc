@@ -6,6 +6,7 @@ import { render, Box, Text, useInput, useApp } from 'ink';
 import { Session } from './types.js';
 import { readSessions } from './session.js';
 import { setLabel } from './store.js';
+import { attachToTmux } from './tmux.js';
 
 // Session List Component
 interface SessionListProps {
@@ -13,25 +14,18 @@ interface SessionListProps {
   selectedIndex: number;
   onSelect: (index: number) => void;
   onEdit: (session: Session) => void;
+  onAttach: (session: Session) => void;
   onQuit: () => void;
 }
 
-function SessionList({ sessions, selectedIndex, onSelect, onEdit, onQuit }: SessionListProps) {
+function SessionList({ sessions, selectedIndex, onSelect, onEdit, onAttach, onQuit }: SessionListProps) {
   useInput((input, key) => {
     if (key.upArrow) {
       onSelect(Math.max(0, selectedIndex - 1));
     } else if (key.downArrow) {
       onSelect(Math.min(sessions.length - 1, selectedIndex + 1));
     } else if (key.return && sessions[selectedIndex]) {
-      // Show full info
-      console.log('\n--- Session Info ---');
-      console.log('PID:', sessions[selectedIndex].pid);
-      console.log('Session ID:', sessions[selectedIndex].id);
-      console.log('Working Dir:', sessions[selectedIndex].workDir);
-      console.log('Status:', sessions[selectedIndex].status);
-      console.log('Description:', sessions[selectedIndex].taskDesc || '(none)');
-      console.log('Last Activity:', sessions[selectedIndex].lastActivity.toLocaleString());
-      console.log('Started At:', sessions[selectedIndex].startedAt.toLocaleString());
+      onAttach(sessions[selectedIndex]);
     } else if (input === 'e' && sessions[selectedIndex]) {
       onEdit(sessions[selectedIndex]);
     } else if (input === 'r') {
@@ -53,7 +47,7 @@ function SessionList({ sessions, selectedIndex, onSelect, onEdit, onQuit }: Sess
   return (
     <Box flexDirection="column" padding={1}>
       <Text bold color="cyan">Claude Code Sessions ({sessions.length})</Text>
-      <Text dimColor>↑↓: Navigate | Enter: Info | e: Edit | r: Refresh | q: Quit</Text>
+      <Text dimColor>↑↓: Navigate | Enter: Attach | e: Edit | r: Refresh | q: Quit</Text>
       <Box flexDirection="column" marginTop={1}>
         {sessions.map((session, index) => (
           <Box key={session.id} flexDirection="row">
@@ -66,6 +60,7 @@ function SessionList({ sessions, selectedIndex, onSelect, onEdit, onQuit }: Sess
             <Text> PID:{session.pid} </Text>
             <Text dimColor>{truncate(session.workDir, 30)}</Text>
             {session.taskDesc && <Text color="magenta"> ({truncate(session.taskDesc, 20)})</Text>}
+            {session.tmuxSessionName && <Text color="green"> [tmux:{truncate(session.tmuxSessionName, 10)}]</Text>}
           </Box>
         ))}
       </Box>
@@ -149,6 +144,31 @@ function App() {
     }
   };
 
+  const handleAttach = (session: Session) => {
+    if (session.tmuxSessionName) {
+      // Attach to tmux session
+      attachToTmux(session.tmuxSessionName);
+      // After user detaches, refresh session list
+      setRefreshKey(prev => prev + 1);
+    } else {
+      // Show info for non-tmux sessions
+      console.log('\n--- Session Info ---');
+      console.log('PID:', session.pid);
+      console.log('Session ID:', session.id);
+      console.log('Working Dir:', session.workDir);
+      console.log('Status:', session.status);
+      console.log('Description:', session.taskDesc || '(none)');
+      console.log('Last Activity:', session.lastActivity.toLocaleString());
+      console.log('Started At:', session.startedAt.toLocaleString());
+      console.log('');
+      console.log('This session is not running in tmux.');
+      console.log('To attach, start Claude Code inside a tmux session:');
+      console.log('  tmux new -s my-session');
+      console.log('  claude');
+      console.log('');
+    }
+  };
+
   if (editingSession) {
     return (
       <EditDescription
@@ -165,6 +185,7 @@ function App() {
       selectedIndex={selectedIndex}
       onSelect={setSelectedIndex}
       onEdit={setEditingSession}
+      onAttach={handleAttach}
       onQuit={exit}
     />
   );
