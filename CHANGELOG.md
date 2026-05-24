@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0.0] - 2026-05-24
+
+### Added
+- **cc-start** - Wrapper script to auto-start Claude Code in tmux
+  - Usage: `cc-start "description"` creates named tmux session
+  - Claude Code starts automatically in detached mode
+  - Session appears in cc-sessions, press Enter to attach
+- **cc-list** - List all tmux sessions
+- **cc-attach** - Quick attach to a tmux session
+
+### New Workflow
+```bash
+# Start new Claude Code session (auto in tmux)
+cc-start "coding MVP"
+
+# Manage all sessions
+cc-sessions  # Press Enter to attach, Ctrl-b d to detach
+
+# Quick list/attach
+cc-list
+cc-attach cc-coding-MVP
+```
+
 ## [0.1.0.0] - 2026-05-24
 
 ### Added
