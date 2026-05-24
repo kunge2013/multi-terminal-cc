@@ -1,0 +1,26 @@
+{
+  "name": "multi-terminal-cc",
+  "version": "0.0.0.0",
+  "description": "Claude Code 多终端并行管理工具",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "cc-sessions": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "bun build src/index.tsx --outdir dist --target node",
+    "dev": "bun run src/index.ts",
+    "test": "bun test",
+    "typecheck": "bun tsc --noEmit"
+  },
+  "dependencies": {
+    "ink": "^5.0.0",
+    "react": "^18.0.0",
+    "react-devtools-core": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^18.0.0",
+    "typescript": "^5.0.0"
+  }
+}
