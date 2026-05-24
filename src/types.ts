@@ -23,6 +23,7 @@ export interface Session {
   workDir: string;     // cwd from JSON
   lastActivity: Date;  // updatedAt from JSON
   startedAt: Date;     // startedAt from JSON
+  tmuxSessionName?: string;  // tmux session name if detected
 }
 
 export interface SessionLabels {
