@@ -104,7 +104,9 @@ function EditDescription({ session, onSave, onCancel }: EditDescriptionProps) {
         <Text bold>{input}</Text>
         <Text dimColor>_</Text>
       </Box>
-      <Text dimColor marginTop={1}>Enter: Save | Esc: Cancel</Text>
+      <Box marginTop={1}>
+        <Text dimColor>Enter: Save | Esc: Cancel</Text>
+      </Box>
     </Box>
   );
 }
